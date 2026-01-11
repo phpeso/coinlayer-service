@@ -1,0 +1,54 @@
+{
+    "name": "peso/coinlayer-service",
+    "type": "library",
+    "description": "Coinlayer data provider for Peso",
+    "keywords": ["currency", "exchange", "conversion", "phpeso", "peso", "coinlayer", "crypto", "bitcoin"],
+    "homepage": "https://phpeso.readthedocs.io/",
+    "license": "MIT",
+    "authors": [{
+        "name": "Anton Smirnov",
+        "role": "developer",
+        "homepage": "https://sandfox.me/",
+        "email": "sandfox+phpeso@sandfox.me"
+    }],
+    "support": {
+    },
+    "config": {
+        "platform": {
+            "php": "8.2.30"
+        },
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "php-http/discovery": true
+        },
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Peso\\Services\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Peso\\Services\\Tests\\": "tests"
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "arokettu/date": "^2.5",
+        "peso/core": "^1.3",
+        "psr/http-client": "^1.0",
+        "psr/http-factory": "^1.0",
+        "psr/simple-cache": "^2 || ^3"
+    },
+    "require-dev": {
+        "guzzlehttp/guzzle": "^7.10",
+        "php-http/discovery": "^1.20",
+        "php-http/mock-client": "^1.6",
+        "phpunit/phpunit": "^11.5",
+        "psy/psysh": "*",
+        "sandfox.dev/code-standard": "^1.2025.09.17",
+        "squizlabs/php_codesniffer": "*",
+        "symfony/cache": "^7.4"
+    }
+}
