@@ -5,6 +5,8 @@
  * @license MIT https://spdx.org/licenses/MIT.html
  */
 
+declare(strict_types=1);
+
 namespace Peso\Services;
 
 use Arokettu\Date\Calendar;
@@ -42,16 +44,12 @@ final readonly class CoinlayerService implements PesoServiceInterface
     public function __construct(
         private string $accessKey,
         private AccessKeyType $accessKeyType,
-        private string $target = 'USD',
         private array|null $symbols = null,
         private CacheInterface $cache = new NullCache(),
         private DateInterval $ttl = new DateInterval('PT1H'),
         private ClientInterface $httpClient = new DiscoveredHttpClient(),
         private RequestFactoryInterface $requestFactory = new DiscoveredRequestFactory(),
     ) {
-        if ($this->accessKeyType === AccessKeyType::Free && $this->target !== 'USD') {
-            throw new ValueError('Free plan supports only USD target');
-        }
     }
 
     public static function reversible(
@@ -126,9 +124,9 @@ final readonly class CoinlayerService implements PesoServiceInterface
         $response = $this->httpClient->sendRequest($request);
 
         // 400 indicates request problems
-//        if ($response->getStatusCode() !== 200 && $response->getStatusCode() !== 400) {
-//            throw HttpFailureException::fromResponse($request, $response);
-//        }
+        if ($response->getStatusCode() !== 200 && $response->getStatusCode() !== 400) {
+            throw HttpFailureException::fromResponse($request, $response);
+        }
 
         /**
          * @var array{success: true, rates: array, timestamp: int}|array{success: false, error: array{code: int}} $data
@@ -138,18 +136,16 @@ final readonly class CoinlayerService implements PesoServiceInterface
             flags: JSON_THROW_ON_ERROR | JSON_OBJECT_AS_ARRAY,
         );
 
-//        if ($data['success'] === false) {
-//            if (
-//                !\in_array($data['error']['code'], [
-//                    106, // conversion - future (no rates)
-//                    201, // invalid base currency
-//                    302, // no rates (future)
-//                    402, // invalid conversion currency
-//                ])
-//            ) {
-//                throw HttpFailureException::fromResponse($request, $response);
-//            }
-//        }
+        if ($data['success'] === false) {
+            if (
+                !\in_array($data['error']['code'], [
+                    201, // invalid base currency
+                    302, // invalid date
+                ])
+            ) {
+                throw HttpFailureException::fromResponse($request, $response);
+            }
+        }
 
         $this->cache->set($cacheKey, $data, $this->ttl);
 
@@ -163,7 +159,7 @@ final readonly class CoinlayerService implements PesoServiceInterface
     public function supports(object $request): bool
     {
         if ($request instanceof CurrentExchangeRateRequest || $request instanceof HistoricalExchangeRateRequest) {
-            return $request->baseCurrency === $this->target;
+            return true;
         }
 
         if ($request instanceof CurrentConversionRequest || $request instanceof HistoricalConversionRequest) {
