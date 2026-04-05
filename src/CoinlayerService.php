@@ -105,6 +105,31 @@ final readonly class CoinlayerService implements PesoServiceInterface
             new ErrorResponse(ExchangeRateNotFoundException::fromRequest($request));
     }
 
+    private function performHistoricalRequest(
+        HistoricalExchangeRateRequest $request,
+    ): ErrorResponse|ExchangeRateResponse {
+        $query = [
+            'access_key' => $this->accessKey,
+            'target' => $request->baseCurrency,
+            'symbols' => $this->symbols === null ? null : implode(',', $this->symbols),
+        ];
+
+        $url = \sprintf(
+            self::ENDPOINT_HISTORICAL,
+            (string)$request->date,
+            http_build_query($query, encoding_type: PHP_QUERY_RFC3986),
+        );
+
+        $rateData = $this->retrieveResponse($url);
+
+        return isset($rateData['rates'][$request->quoteCurrency]) ?
+            new ExchangeRateResponse(
+                Decimal::init($rateData['rates'][$request->quoteCurrency]),
+                Calendar::fromTimestamp($rateData['timestamp']),
+            ) :
+            new ErrorResponse(ExchangeRateNotFoundException::fromRequest($request));
+    }
+
     private function retrieveResponse(string $url): array|false
     {
         $cacheKey = 'peso|coinlayer|' . hash('sha1', $url);
@@ -137,12 +162,10 @@ final readonly class CoinlayerService implements PesoServiceInterface
         );
 
         if ($data['success'] === false) {
-            if (
-                !\in_array($data['error']['code'], [
-                    201, // invalid base currency
-                    302, // invalid date
-                ])
-            ) {
+            if (!\in_array($data['error']['code'], [
+                201, // invalid base currency
+                302, // invalid date
+            ])) {
                 throw HttpFailureException::fromResponse($request, $response);
             }
         }

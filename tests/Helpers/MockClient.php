@@ -38,10 +38,36 @@ final readonly class MockClient
                         ));
 
                     case 'access_key=xxxfreexxx&target=UNK':
-                        return new Response(400, body: fopen(__DIR__ . '/../data/rates/latest-err.json', 'r'));
+                        return new Response(400, body: fopen(__DIR__ . '/../data/rates/unknown-currency.json', 'r'));
 
                     default:
-                        throw new \LogicException('Non-mocked query: ' . $query);
+                        throw new \LogicException('Non-mocked query: ' . $request->getUri());
+                }
+            },
+        );
+
+        $client->on(
+            new RequestMatcher('/2026-02-04', 'api.coinlayer.com', ['GET'], ['https']),
+            static function (RequestInterface $request) {
+                $query = $request->getUri()->getQuery();
+                switch ($query) {
+                    case 'access_key=xxxfreexxx&target=USD':
+                        return new Response(200, body: fopen(__DIR__ . '/../data/rates/2026-02-04-usd.json', 'r'));
+
+                    case 'access_key=xxxfreexxx&target=CZK':
+                        return new Response(200, body: fopen(__DIR__ . '/../data/rates/2026-02-04-czk.json', 'r'));
+
+                    case 'access_key=xxxfreexxx&target=USD&symbols=BTC%2CZSC%2CMNX':
+                        return new Response(200, body: fopen(
+                            __DIR__ . '/../data/rates/2026-02-04-usd-btc,zsc,mnx.json',
+                            'r',
+                        ));
+
+                    case 'access_key=xxxfreexxx&target=UNK':
+                        return new Response(400, body: fopen(__DIR__ . '/../data/rates/unknown-currency.json', 'r'));
+
+                    default:
+                        throw new \LogicException('Non-mocked query: ' . $request->getUri());
                 }
             },
         );
