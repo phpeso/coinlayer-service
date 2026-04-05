@@ -33,7 +33,6 @@ use Peso\Services\Coinlayer\AccessKeyType;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\SimpleCache\CacheInterface;
-use ValueError;
 
 final readonly class CoinlayerService implements PesoServiceInterface
 {
@@ -55,7 +54,6 @@ final readonly class CoinlayerService implements PesoServiceInterface
     public static function reversible(
         string $accessKey,
         AccessKeyType $accessKeyType,
-        string $target = 'USD',
         array|null $symbols = null,
         CacheInterface $cache = new NullCache(),
         DateInterval $ttl = new DateInterval('PT1H'),
@@ -63,7 +61,7 @@ final readonly class CoinlayerService implements PesoServiceInterface
         RequestFactoryInterface $requestFactory = new DiscoveredRequestFactory(),
     ): PesoServiceInterface {
         return new ReversibleService(
-            new self($accessKey, $accessKeyType, $target, $symbols, $cache, $ttl, $httpClient, $requestFactory),
+            new self($accessKey, $accessKeyType, $symbols, $cache, $ttl, $httpClient, $requestFactory),
         );
     }
 
