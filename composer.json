@@ -12,6 +12,9 @@
         "email": "sandfox+phpeso@sandfox.me"
     }],
     "support": {
+        "issues": "https://github.com/phpeso/coinlayer-service/issues",
+        "source": "https://github.com/phpeso/coinlayer-service",
+        "docs": "https://phpeso.readthedocs.io/"
     },
     "config": {
         "platform": {
