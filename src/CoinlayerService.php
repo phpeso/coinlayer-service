@@ -194,6 +194,7 @@ final readonly class CoinlayerService implements PesoServiceInterface
             if (!\in_array($data['error']['code'], [
                 201, // invalid base currency
                 302, // invalid date
+                402, // invalid currency on conversion
             ])) {
                 throw HttpFailureException::fromResponse($request, $response);
             }

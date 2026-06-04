@@ -72,6 +72,47 @@ final readonly class MockClient
             },
         );
 
+        $client->on(
+            new RequestMatcher('/convert', 'api.coinlayer.com', ['GET'], ['https']),
+            static function (RequestInterface $request) {
+                $query = $request->getUri()->getQuery();
+                switch ($query) {
+                    case 'access_key=xxpaidxx&from=BTC&to=USD&amount=1234.56':
+                        return new Response(200, body: fopen(
+                            __DIR__ . '/../data/conv/current-btc-usd.json',
+                            'r',
+                        ));
+
+                    case 'access_key=xxpaidxx&from=USD&to=ETH&amount=1234.56':
+                        return new Response(200, body: fopen(
+                            __DIR__ . '/../data/conv/current-usd-eth.json',
+                            'r',
+                        ));
+
+                    case 'access_key=xxpaidxx&from=ETH&to=LTC&amount=1234.56':
+                        return new Response(200, body: fopen(
+                            __DIR__ . '/../data/conv/current-eth-ltc.json',
+                            'r',
+                        ));
+
+                    case 'access_key=xxpaidxx&from=USD&to=XBT&amount=1':
+                        return new Response(400, body: fopen(
+                            __DIR__ . '/../data/conv/current-usd-xbt.json',
+                            'r',
+                        ));
+
+                    case 'access_key=xxpaidxx&from=XBT&to=USD&amount=1':
+                        return new Response(400, body: fopen(
+                            __DIR__ . '/../data/conv/current-xbt-usd.json',
+                            'r',
+                        ));
+
+                    default:
+                        throw new \LogicException('Non-mocked query: ' . $request->getUri());
+                }
+            },
+        );
+
         return $client;
     }
 }
