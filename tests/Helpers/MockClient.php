@@ -107,6 +107,24 @@ final readonly class MockClient
                             'r',
                         ));
 
+                    case 'access_key=xxpaidxx&from=BTC&to=USD&amount=1234.56&date=2016-06-13':
+                        return new Response(200, body: fopen(
+                            __DIR__ . '/../data/conv/2016-06-13-btc-usd.json',
+                            'r',
+                        ));
+
+                    case 'access_key=xxpaidxx&from=USD&to=ETH&amount=1234.56&date=2016-06-13':
+                        return new Response(200, body: fopen(
+                            __DIR__ . '/../data/conv/2016-06-13-usd-eth.json',
+                            'r',
+                        ));
+
+                    case 'access_key=xxpaidxx&from=ETH&to=LTC&amount=1234.56&date=2016-06-13':
+                        return new Response(200, body: fopen(
+                            __DIR__ . '/../data/conv/2016-06-13-eth-ltc.json',
+                            'r',
+                        ));
+
                     default:
                         throw new \LogicException('Non-mocked query: ' . $request->getUri());
                 }
