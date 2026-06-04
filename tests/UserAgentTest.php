@@ -33,7 +33,7 @@ final class UserAgentTest extends TestCase
         $pesoVersion = InstalledVersions::getPrettyVersion('peso/core');
         $clientVersion = InstalledVersions::getPrettyVersion('peso/coinlayer-service');
 
-        $service->send(new CurrentExchangeRateRequest('USD', 'BTC'));
+        $service->send(new CurrentExchangeRateRequest('BTC', 'USD'));
 
         $request = $http->getLastRequest();
 
@@ -73,7 +73,7 @@ final class UserAgentTest extends TestCase
         $pesoVersion = InstalledVersions::getPrettyVersion('peso/core');
         $clientVersion = InstalledVersions::getPrettyVersion('peso/coinlayer-service');
 
-        $service->send(new CurrentExchangeRateRequest('USD', 'BTC'));
+        $service->send(new CurrentExchangeRateRequest('BTC', 'USD'));
 
         $request = $http->getLastRequest();
 

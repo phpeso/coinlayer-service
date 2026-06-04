@@ -32,17 +32,17 @@ final class HistoricalRatesTest extends TestCase
         $service = new CoinlayerService('xxxfreexxx', AccessKeyType::Free, cache: $cache, httpClient: $http);
         $date = Calendar::parse('2026-02-04');
 
-        $response = $service->send(new HistoricalExchangeRateRequest('USD', 'BTC', $date));
+        $response = $service->send(new HistoricalExchangeRateRequest('BTC', 'USD', $date));
         self::assertInstanceOf(ExchangeRateResponse::class, $response);
         self::assertEquals('73154.462318', $response->rate->value);
         self::assertEquals('2026-02-04', $response->date->toString());
 
-        $response = $service->send(new HistoricalExchangeRateRequest('USD', 'ZSC', $date)); // exponent rate
+        $response = $service->send(new HistoricalExchangeRateRequest('ZSC', 'USD', $date)); // exponent rate
         self::assertInstanceOf(ExchangeRateResponse::class, $response);
         self::assertEquals('0.00002376', $response->rate->value);
         self::assertEquals('2026-02-04', $response->date->toString());
 
-        $response = $service->send(new HistoricalExchangeRateRequest('USD', 'DOGE', $date));
+        $response = $service->send(new HistoricalExchangeRateRequest('DOGE', 'USD', $date));
         self::assertInstanceOf(ExchangeRateResponse::class, $response);
         self::assertEquals('0.104133', $response->rate->value);
         self::assertEquals('2026-02-04', $response->date->toString());
@@ -58,17 +58,17 @@ final class HistoricalRatesTest extends TestCase
         $service = new CoinlayerService('xxxfreexxx', AccessKeyType::Subscription, cache: $cache, httpClient: $http);
         $date = Calendar::parse('2026-02-04');
 
-        $response = $service->send(new HistoricalExchangeRateRequest('CZK', 'BTC', $date));
+        $response = $service->send(new HistoricalExchangeRateRequest('BTC', 'CZK', $date));
         self::assertInstanceOf(ExchangeRateResponse::class, $response);
         self::assertEquals('1510913.949582', $response->rate->value);
         self::assertEquals('2026-02-04', $response->date->toString());
 
-        $response = $service->send(new HistoricalExchangeRateRequest('CZK', 'ZSC', $date));
+        $response = $service->send(new HistoricalExchangeRateRequest('ZSC', 'CZK', $date));
         self::assertInstanceOf(ExchangeRateResponse::class, $response);
         self::assertEquals('0.000491', $response->rate->value);
         self::assertEquals('2026-02-04', $response->date->toString());
 
-        $response = $service->send(new HistoricalExchangeRateRequest('CZK', 'DOGE', $date));
+        $response = $service->send(new HistoricalExchangeRateRequest('DOGE', 'CZK', $date));
         self::assertInstanceOf(ExchangeRateResponse::class, $response);
         self::assertEquals('2.150743', $response->rate->value);
         self::assertEquals('2026-02-04', $response->date->toString());
@@ -86,21 +86,21 @@ final class HistoricalRatesTest extends TestCase
         ], cache: $cache, httpClient: $http);
         $date = Calendar::parse('2026-02-04');
 
-        $response = $service->send(new HistoricalExchangeRateRequest('USD', 'BTC', $date));
+        $response = $service->send(new HistoricalExchangeRateRequest('BTC', 'USD', $date));
         self::assertInstanceOf(ExchangeRateResponse::class, $response);
         self::assertEquals('73154.462318', $response->rate->value);
         self::assertEquals('2026-02-04', $response->date->toString());
 
-        $response = $service->send(new HistoricalExchangeRateRequest('USD', 'ZSC', $date));
+        $response = $service->send(new HistoricalExchangeRateRequest('ZSC', 'USD', $date));
         self::assertInstanceOf(ExchangeRateResponse::class, $response);
         self::assertEquals('0.00002376', $response->rate->value);
         self::assertEquals('2026-02-04', $response->date->toString());
 
         // not included
-        $response = $service->send(new HistoricalExchangeRateRequest('USD', 'DOGE', $date));
+        $response = $service->send(new HistoricalExchangeRateRequest('DOGE', 'USD', $date));
         self::assertInstanceOf(ErrorResponse::class, $response);
         self::assertInstanceOf(ExchangeRateNotFoundException::class, $response->exception);
-        self::assertEquals('Unable to find exchange rate for USD/DOGE on 2026-02-04', $response->exception->getMessage());
+        self::assertEquals('Unable to find exchange rate for DOGE/USD on 2026-02-04', $response->exception->getMessage());
 
         self::assertCount(1, $http->getRequests()); // subsequent requests are cached
     }
@@ -113,9 +113,9 @@ final class HistoricalRatesTest extends TestCase
         $service = new CoinlayerService('xxxfreexxx', AccessKeyType::Subscription, cache: $cache, httpClient: $http);
         $date = Calendar::parse('2026-02-04');
 
-        $response = $service->send(new HistoricalExchangeRateRequest('UNK', 'DOGE', $date));
+        $response = $service->send(new HistoricalExchangeRateRequest('DOGE', 'UNK', $date));
         self::assertInstanceOf(ErrorResponse::class, $response);
         self::assertInstanceOf(ExchangeRateNotFoundException::class, $response->exception);
-        self::assertEquals('Unable to find exchange rate for UNK/DOGE on 2026-02-04', $response->exception->getMessage());
+        self::assertEquals('Unable to find exchange rate for DOGE/UNK on 2026-02-04', $response->exception->getMessage());
     }
 }

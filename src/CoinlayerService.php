@@ -88,7 +88,7 @@ final readonly class CoinlayerService implements PesoServiceInterface
     {
         $query = [
             'access_key' => $this->accessKey,
-            'target' => $request->baseCurrency,
+            'target' => $request->quoteCurrency,
             'symbols' => $this->symbols === null ? null : implode(',', $this->symbols),
         ];
 
@@ -96,9 +96,9 @@ final readonly class CoinlayerService implements PesoServiceInterface
 
         $rateData = $this->retrieveResponse($url);
 
-        return isset($rateData['rates'][$request->quoteCurrency]) ?
+        return isset($rateData['rates'][$request->baseCurrency]) ?
             new ExchangeRateResponse(
-                Decimal::init($rateData['rates'][$request->quoteCurrency]),
+                Decimal::init($rateData['rates'][$request->baseCurrency]),
                 Calendar::fromTimestamp($rateData['timestamp']),
             ) :
             new ErrorResponse(ExchangeRateNotFoundException::fromRequest($request));
@@ -109,7 +109,7 @@ final readonly class CoinlayerService implements PesoServiceInterface
     ): ErrorResponse|ExchangeRateResponse {
         $query = [
             'access_key' => $this->accessKey,
-            'target' => $request->baseCurrency,
+            'target' => $request->quoteCurrency,
             'symbols' => $this->symbols === null ? null : implode(',', $this->symbols),
         ];
 
@@ -121,9 +121,9 @@ final readonly class CoinlayerService implements PesoServiceInterface
 
         $rateData = $this->retrieveResponse($url);
 
-        return isset($rateData['rates'][$request->quoteCurrency]) ?
+        return isset($rateData['rates'][$request->baseCurrency]) ?
             new ExchangeRateResponse(
-                Decimal::init($rateData['rates'][$request->quoteCurrency]),
+                Decimal::init($rateData['rates'][$request->baseCurrency]),
                 Calendar::fromTimestamp($rateData['timestamp']),
             ) :
             new ErrorResponse(ExchangeRateNotFoundException::fromRequest($request));

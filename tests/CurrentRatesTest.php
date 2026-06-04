@@ -30,17 +30,17 @@ final class CurrentRatesTest extends TestCase
 
         $service = new CoinlayerService('xxxfreexxx', AccessKeyType::Free, cache: $cache, httpClient: $http);
 
-        $response = $service->send(new CurrentExchangeRateRequest('USD', 'BTC'));
+        $response = $service->send(new CurrentExchangeRateRequest('BTC', 'USD'));
         self::assertInstanceOf(ExchangeRateResponse::class, $response);
         self::assertEquals('97532.258571', $response->rate->value);
         self::assertEquals('2026-01-14', $response->date->toString());
 
-        $response = $service->send(new CurrentExchangeRateRequest('USD', 'ZSC')); // exponent rate
+        $response = $service->send(new CurrentExchangeRateRequest('ZSC', 'USD')); // exponent rate
         self::assertInstanceOf(ExchangeRateResponse::class, $response);
         self::assertEquals('0.00002376', $response->rate->value);
         self::assertEquals('2026-01-14', $response->date->toString());
 
-        $response = $service->send(new CurrentExchangeRateRequest('USD', 'DOGE'));
+        $response = $service->send(new CurrentExchangeRateRequest('DOGE', 'USD'));
         self::assertInstanceOf(ExchangeRateResponse::class, $response);
         self::assertEquals('0.148912', $response->rate->value);
         self::assertEquals('2026-01-14', $response->date->toString());
@@ -55,17 +55,17 @@ final class CurrentRatesTest extends TestCase
 
         $service = new CoinlayerService('xxxfreexxx', AccessKeyType::Subscription, cache: $cache, httpClient: $http);
 
-        $response = $service->send(new CurrentExchangeRateRequest('CZK', 'BTC'));
+        $response = $service->send(new CurrentExchangeRateRequest('BTC', 'CZK'));
         self::assertInstanceOf(ExchangeRateResponse::class, $response);
         self::assertEquals('2023357.58177', $response->rate->value);
         self::assertEquals('2026-01-14', $response->date->toString());
 
-        $response = $service->send(new CurrentExchangeRateRequest('CZK', 'ZSC'));
+        $response = $service->send(new CurrentExchangeRateRequest('ZSC', 'CZK'));
         self::assertInstanceOf(ExchangeRateResponse::class, $response);
         self::assertEquals('0.000495', $response->rate->value);
         self::assertEquals('2026-01-14', $response->date->toString());
 
-        $response = $service->send(new CurrentExchangeRateRequest('CZK', 'DOGE'));
+        $response = $service->send(new CurrentExchangeRateRequest('DOGE', 'CZK'));
         self::assertInstanceOf(ExchangeRateResponse::class, $response);
         self::assertEquals('3.08173', $response->rate->value);
         self::assertEquals('2026-01-14', $response->date->toString());
@@ -82,21 +82,21 @@ final class CurrentRatesTest extends TestCase
             'BTC', 'ZSC', 'MNX',
         ], cache: $cache, httpClient: $http);
 
-        $response = $service->send(new CurrentExchangeRateRequest('USD', 'BTC'));
+        $response = $service->send(new CurrentExchangeRateRequest('BTC', 'USD'));
         self::assertInstanceOf(ExchangeRateResponse::class, $response);
         self::assertEquals('97450.985', $response->rate->value);
         self::assertEquals('2026-01-14', $response->date->toString());
 
-        $response = $service->send(new CurrentExchangeRateRequest('USD', 'ZSC'));
+        $response = $service->send(new CurrentExchangeRateRequest('ZSC', 'USD'));
         self::assertInstanceOf(ExchangeRateResponse::class, $response);
         self::assertEquals('0.00002376', $response->rate->value);
         self::assertEquals('2026-01-14', $response->date->toString());
 
         // not included
-        $response = $service->send(new CurrentExchangeRateRequest('USD', 'DOGE'));
+        $response = $service->send(new CurrentExchangeRateRequest('DOGE', 'USD'));
         self::assertInstanceOf(ErrorResponse::class, $response);
         self::assertInstanceOf(ExchangeRateNotFoundException::class, $response->exception);
-        self::assertEquals('Unable to find exchange rate for USD/DOGE', $response->exception->getMessage());
+        self::assertEquals('Unable to find exchange rate for DOGE/USD', $response->exception->getMessage());
 
         self::assertCount(1, $http->getRequests()); // subsequent requests are cached
     }
@@ -108,9 +108,9 @@ final class CurrentRatesTest extends TestCase
 
         $service = new CoinlayerService('xxxfreexxx', AccessKeyType::Subscription, cache: $cache, httpClient: $http);
 
-        $response = $service->send(new CurrentExchangeRateRequest('UNK', 'DOGE'));
+        $response = $service->send(new CurrentExchangeRateRequest('DOGE', 'UNK'));
         self::assertInstanceOf(ErrorResponse::class, $response);
         self::assertInstanceOf(ExchangeRateNotFoundException::class, $response->exception);
-        self::assertEquals('Unable to find exchange rate for UNK/DOGE', $response->exception->getMessage());
+        self::assertEquals('Unable to find exchange rate for DOGE/UNK', $response->exception->getMessage());
     }
 }
