@@ -12,6 +12,7 @@ namespace Peso\Services;
 use Arokettu\Date\Calendar;
 use DateInterval;
 use Override;
+use Peso\Core\Exceptions\ConversionNotPerformedException;
 use Peso\Core\Exceptions\ExchangeRateNotFoundException;
 use Peso\Core\Exceptions\RequestNotSupportedException;
 use Peso\Core\Requests\CurrentConversionRequest;
@@ -126,6 +127,36 @@ final readonly class CoinlayerService implements PesoServiceInterface
                 Calendar::fromTimestamp($rateData['timestamp']),
             ) :
             new ErrorResponse(ExchangeRateNotFoundException::fromRequest($request));
+    }
+
+    private function performConversionRequest(
+        CurrentConversionRequest|HistoricalConversionRequest $request,
+    ): ErrorResponse|ConversionResponse {
+        if ($this->accessKeyType !== AccessKeyType::Subscription) {
+            return new ErrorResponse(RequestNotSupportedException::fromRequest($request));
+        }
+
+        $query = [
+            'access_key' => $this->accessKey,
+            'from' => $request->baseCurrency,
+            'to' => $request->quoteCurrency,
+            'amount' => $request->baseAmount->value,
+        ];
+
+        if ($request instanceof HistoricalConversionRequest) {
+            $query['date'] = $request->date->toString();
+        }
+
+        $url = \sprintf(self::ENDPOINT_CONVERSION, http_build_query($query, encoding_type: PHP_QUERY_RFC3986));
+
+        $convertData = $this->retrieveResponse($url);
+
+        return isset($convertData['result']) ?
+            new ConversionResponse(
+                Decimal::init($convertData['result']),
+                Calendar::fromTimestamp($convertData['info']['timestamp']),
+            ) :
+            new ErrorResponse(ConversionNotPerformedException::fromRequest($request));
     }
 
     private function retrieveResponse(string $url): array|false
